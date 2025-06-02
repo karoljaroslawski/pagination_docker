@@ -1,0 +1,30 @@
+services:
+    backend:
+        container_name: "express_backend"
+        build: ./backend
+        ports:
+            - "5000:5000"
+        depends_on:
+            baza:
+                condition: service_healthy
+    frontend:
+        container_name: "react_frontend"
+        build: ./frontend
+        ports:
+            - "3000:3000"
+    baza:
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: test123
+            POSTGRES_DB: test_db
+        container_name: "postgre_database"
+        build: ./baza
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready", "-d", "test_db"]
+            interval: 60s
+            timeout: 10s
+            retries: 5
+            start_period: 40s
+        ports:
+            - "5432:5432"
+        
